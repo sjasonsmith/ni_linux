@@ -137,7 +137,13 @@ static const struct serial8250_config uart_config[] = {
 		.name		= "16C950/954",
 		.fifo_size	= 128,
 		.tx_loadsz	= 128,
-		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
+		// Replace the R_TRIG value below to alter the RX FIFO Interrupt trigger level.
+		// Smaller values provide better responsiveness, but require more CPU time to process interrupts.
+		// UART_FCR_R_TRIG_00 - 1 byte
+		// UART_FCR_R_TRIG_01 - 32 bytes
+		// UART_FCR_R_TRIG_10 - 64 bytes
+		// UART_FCR_R_TRIG_11 - 112 bytes
+		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_01,
 		/* UART_CAP_EFR breaks billionon CF bluetooth card. */
 		.flags		= UART_CAP_FIFO | UART_CAP_SLEEP,
 	},
@@ -2546,6 +2552,7 @@ static unsigned int serial8250_do_get_divisor(struct uart_port *port,
 	if (up->bugs & UART_BUG_QUOT && (quot & 0xff) == 0)
 		quot++;
 
+	printk("serial8250_do_get_divisor -- baud: %u, quot: %u", baud, quot);
 	return quot;
 }
 
