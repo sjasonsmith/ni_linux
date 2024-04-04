@@ -424,6 +424,7 @@ static const struct of_device_id ni16550_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, ni16550_of_match);
 
+#ifdef CONFIG_ACPI
 /* NI 16550 RS-485 Interface */
 static const struct ni16550_device_info nic7750 = {
 	.uartclk = 33333333,
@@ -448,8 +449,6 @@ static const struct ni16550_device_info nic7a69 = {
 	.uartclk = 29629629,
 	.prescaler = 0x09,
 };
-
-#ifdef CONFIG_ACPI
 static const struct acpi_device_id ni16550_acpi_match[] = {
 	{ "NIC7750",	(kernel_ulong_t)&nic7750 },
 	{ "NIC7772",	(kernel_ulong_t)&nic7772 },
