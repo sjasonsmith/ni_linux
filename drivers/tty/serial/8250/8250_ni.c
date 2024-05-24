@@ -339,8 +339,8 @@ static int ni16550_probe(struct platform_device *pdev)
 		uart.port.uartclk = info->uartclk;
 	if (device_property_read_u32(dev, "clock-frequency",
 				     &uart.port.uartclk)) {
-		data->clk = devm_clk_get_optional_enabled(dev, NULL);
-		if (data->clk)
+		data->clk = devm_clk_get_enabled(dev, NULL);
+		if (!IS_ERR(data->clk))
 			uart.port.uartclk = clk_get_rate(data->clk);
 	}
 
