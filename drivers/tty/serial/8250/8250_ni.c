@@ -282,8 +282,8 @@ static int ni16550_probe(struct platform_device *pdev)
 	unsigned int prescaler = 0;
 	struct ni16550_data *data;
 	const char *portmode;
-	int txfifosz, rxfifosz;
-	int rs232_property;
+	unsigned int txfifosz, rxfifosz;
+	bool rs232_property;
 	int ret;
 	int irq;
 
@@ -320,7 +320,7 @@ static int ni16550_probe(struct platform_device *pdev)
 	txfifosz = ni16550_read_fifo_size(&uart, NI16550_TFS_OFFSET);
 	rxfifosz = ni16550_read_fifo_size(&uart, NI16550_RFS_OFFSET);
 
-	dev_dbg(dev, "NI 16550 has TX FIFO size %d, RX FIFO size %d\n",
+	dev_dbg(dev, "NI 16550 has TX FIFO size %u, RX FIFO size %u\n",
 		txfifosz, rxfifosz);
 
 	uart.port.type		= PORT_16550A;
