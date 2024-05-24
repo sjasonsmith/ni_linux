@@ -373,17 +373,17 @@ static int ni16550_probe(struct platform_device *pdev)
 	    !device_property_read_string(dev, "transceiver", &portmode)) {
 		rs232_property = strncmp(portmode, "RS-232", 6) == 0;
 
-		dev_dbg(dev, "port is in %s mode (via device property)",
+		dev_dbg(dev, "port is in %s mode (via device property)\n",
 			rs232_property ? "RS-232" : "RS-485");
 	} else if (info->flags & NI_HAS_PMR) {
 		rs232_property = is_pmr_rs232_mode(&uart);
 
-		dev_dbg(dev, "port is in %s mode (via PMR)",
+		dev_dbg(dev, "port is in %s mode (via PMR)\n",
 			rs232_property ? "RS-232" : "RS-485");
 	} else {
 		rs232_property = 0;
 
-		dev_dbg(dev, "port is fixed as RS-485");
+		dev_dbg(dev, "port is fixed as RS-485\n");
 	}
 
 	if (!rs232_property) {
