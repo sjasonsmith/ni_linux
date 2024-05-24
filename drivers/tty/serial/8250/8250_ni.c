@@ -403,7 +403,6 @@ static int ni16550_probe(struct platform_device *pdev)
 	return 0;
 
 err:
-	clk_disable_unprepare(data->clk);
 	return ret;
 }
 
@@ -411,7 +410,6 @@ static int ni16550_remove(struct platform_device *pdev)
 {
 	struct ni16550_data *data = platform_get_drvdata(pdev);
 
-	clk_disable_unprepare(data->clk);
 	serial8250_unregister_port(data->line);
 	return 0;
 }
