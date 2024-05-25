@@ -11,6 +11,7 @@
  */
 
 #include <linux/acpi.h>
+#include <linux/bitfield.h>
 #include <linux/device.h>
 #include <linux/io.h>
 #include <linux/init.h>
@@ -33,14 +34,14 @@
 #define NI16550_PMR_OFFSET	0x0E
 /* PMR[1:0] - Port Capabilities */
 #define NI16550_PMR_CAP_MASK			GENMASK(1, 0)
-#define NI16550_PMR_NOT_IMPL			0x00 /* not implemented */
-#define NI16550_PMR_CAP_RS232			0x01 /* RS-232 capable */
-#define NI16550_PMR_CAP_RS485			0x02 /* RS-485 capable */
-#define NI16550_PMR_CAP_DUAL			0x03 /* dual-port */
+#define NI16550_PMR_NOT_IMPL			FIELD_PREP(NI16550_PMR_CAP_MASK, 0) /* not implemented */
+#define NI16550_PMR_CAP_RS232			FIELD_PREP(NI16550_PMR_CAP_MASK, 1) /* RS-232 capable */
+#define NI16550_PMR_CAP_RS485			FIELD_PREP(NI16550_PMR_CAP_MASK, 2) /* RS-485 capable */
+#define NI16550_PMR_CAP_DUAL			FIELD_PREP(NI16550_PMR_CAP_MASK, 3) /* dual-port */
 /* PMR[4] - Interface Mode */
 #define NI16550_PMR_MODE_MASK			GENMASK(4, 4)
-#define NI16550_PMR_MODE_RS232			0x00 /* currently 232 */
-#define NI16550_PMR_MODE_RS485			0x10 /* currently 485 */
+#define NI16550_PMR_MODE_RS232			FIELD_PREP(NI16550_PMR_MODE_MASK, 0) /* currently 232 */
+#define NI16550_PMR_MODE_RS485			FIELD_PREP(NI16550_PMR_MODE_MASK, 1) /* currently 485 */
 
 /* PCR - Port Control Register */
 /*
@@ -52,11 +53,11 @@
  * PCR_AUTO_RS485 | When data in TX FIFO | Disabled when TX enabled
  */
 #define NI16550_PCR_OFFSET	0x0F
-#define NI16550_PCR_RS422			0x00
-#define NI16550_PCR_ECHO_RS485			0x01
-#define NI16550_PCR_DTR_RS485			0x02
-#define NI16550_PCR_AUTO_RS485			0x03
 #define NI16550_PCR_WIRE_MODE_MASK		GENMASK(1, 0)
+#define NI16550_PCR_RS422			FIELD_PREP(NI16550_PCR_WIRE_MODE_MASK, 0)
+#define NI16550_PCR_ECHO_RS485			FIELD_PREP(NI16550_PCR_WIRE_MODE_MASK, 1)
+#define NI16550_PCR_DTR_RS485			FIELD_PREP(NI16550_PCR_WIRE_MODE_MASK, 2)
+#define NI16550_PCR_AUTO_RS485			FIELD_PREP(NI16550_PCR_WIRE_MODE_MASK, 3)
 #define NI16550_PCR_TXVR_ENABLE_BIT		BIT(3)
 #define NI16550_PCR_RS485_TERMINATION_BIT	BIT(6)
 
@@ -251,13 +252,13 @@ static int ni16550_get_regs(struct platform_device *pdev,
 	return -EINVAL;
 }
 
-static u8 ni16550_read_fifo_size(struct uart_8250_port *uart, int reg)
-{
 	/*
 	 * Very old implementations don't have the TFS or RFS registers
 	 * defined, so we may read all-0s or all-1s. For such devices,
 	 * assume a FIFO size of 128.
 	 */
+static u8 ni16550_read_fifo_size(struct uart_8250_port *uart, int reg)
+{
 	u8 value = serial_in(uart, reg);
 
 	if (value == 0x00 || value == 0xFF)
